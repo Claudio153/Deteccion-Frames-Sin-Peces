@@ -19,5 +19,6 @@ El objetivo principal es desarrollar un modelo de visión por computador que:
 ### 1️⃣ Preprocesamiento (`Preprocesamiento.ipynb`)
 En esta etapa se:
 - Cargan los datasets originales desde:
+  
   datasets/con_pez/
   datasets/vacio/
