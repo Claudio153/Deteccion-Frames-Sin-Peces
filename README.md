@@ -21,4 +21,5 @@ En esta etapa se:
 - Cargan los datasets originales desde:
   
   datasets/con_pez/
+  
   datasets/vacio/
