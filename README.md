@@ -11,7 +11,6 @@ El objetivo principal es desarrollar un modelo de visión por computador que:
 
 * Clasifique los frames en dos categorías: **con_pez** y **vacio**.
 * Evite a toda costa eliminar frames con peces.
-* Aplique **data augmentation offline y al vuelo** para mejorar la robustez del entrenamiento.
 * Utilice **transfer learning** con la red **MobileNetV3-Small**.
 
 ---
@@ -64,7 +63,7 @@ Durante el entrenamiento:
 * Se utiliza **CrossEntropyLoss** con pesos ajustados para penalizar más los errores al clasificar frames con peces:
 
   ```python
-  criterion = nn.CrossEntropyLoss(weight=torch.tensor([1.2, 1.0]).to(DEVICE))
+  criterion = nn.CrossEntropyLoss(weight=torch.tensor([2.0, 1.0]).to(DEVICE))
   ```
 * Optimización con **Adam** y **scheduler**:
 
