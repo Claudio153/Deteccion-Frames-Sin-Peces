@@ -21,14 +21,16 @@ El objetivo principal es desarrollar un modelo de visión por computador que:
 
 En esta etapa se:
 
-* Cargan los datasets originales desde:
+* Cargan los datasets de los frames vacios desde:
 
   ```
-  datasets/con_pez/
-  datasets/vacio/
+  frames_separados/frames_vacios
   ```
 * Se realiza **data augmentation offline** sobre los frames vacíos (rotación leve, espejado, cambios de contraste, brillo y blur suave).
-
+* Se guardan los frames originales con sus 4 variaciones de transformaciones en:
+  ```
+  datasets/vacio
+  ```
 
 ---
 
