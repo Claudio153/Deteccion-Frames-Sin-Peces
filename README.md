@@ -27,9 +27,8 @@ En esta etapa se:
   datasets/con_pez/
   datasets/vacio/
   ```
-* Se aplica **redimensionamiento** de imágenes a **224×224 píxeles**.
 * Se realiza **data augmentation offline** sobre los frames vacíos (rotación leve, espejado, cambios de contraste, brillo y blur suave).
-* Se balancea el dataset final seleccionando aleatoriamente un número similar de imágenes con peces.
+
 
 ---
 
