@@ -119,13 +119,16 @@ vacio      → Precision: 0.987 | Recall: 1.000 | F1-score: 0.993
 ```
 deteccion_frames_vacios/
 │
-├── notebooks/
-│   ├── Preprocesamiento.ipynb
-│   └── Entrenamiento.ipynb
+├── Preprocesamiento.ipynb
+├──Entrenamiento.ipynb
 │
-├── data/
-│   ├── datasets/
-│   └── datasets_final/
+├── datasets/
+│   ├── con_pez/
+│   │    ├── 1_pez/
+│   │    ├── 2_peces/
+│   │    └── 3_peces/
+│   │ 
+│   └── vacio/
 │
 ├── mobilenetv3_binaria_best.pt
 │
