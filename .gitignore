@@ -1,0 +1,19 @@
+# Dataset confidencial
+datasets/
+datasets_test/
+*.zip
+*.rar
+
+# Archivos del entorno
+__pycache__/
+*.pt
+*.pth
+*.ckpt
+*.egg-info
+*.log
+*.tmp
+
+# Configs de entorno local
+.env
+.venv/
+.ipynb_checkpoints/
