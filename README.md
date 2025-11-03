@@ -73,20 +73,7 @@ Esto abrirá **JupyterLab** en tu navegador, desde donde podrás ejecutar los no
    * Usa un conjunto de prueba externo (`datasets_test/`) para medir el desempeño final del modelo.
    * Genera la matriz de confusión y el reporte de clasificación.
 
----
 
-## 📊 Resultados Esperados
-
-El modelo alcanza un desempeño superior al **99% de accuracy** con alta estabilidad entre folds:
-
-| Métrica   | Promedio (K-Fold) |
-| --------- | ----------------: |
-| Accuracy  |            ≈ 0.99 |
-| Precision |            ≈ 0.99 |
-| Recall    |            ≈ 0.99 |
-| F1-Score  |            ≈ 0.99 |
-
----
 
 ## 🧩 Notas adicionales
 
