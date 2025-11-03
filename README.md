@@ -1,192 +1,112 @@
-# 🐟 Detección de Frames Vacíos en Secuencias de Video
+# 🧠 Proyecto de Clasificación de Frames de Salmones
 
-Este proyecto implementa un modelo de **clasificación binaria** basado en **MobileNetV3 preentrenada en ImageNet**, cuyo objetivo es **identificar y eliminar frames vacíos** (sin peces) provenientes de secuencias de video de inspección.
-El propósito es optimizar el procesamiento de datos, eliminando los frames que no aportan información útil.
-
----
-
-## 🎯 Objetivo del proyecto
-
-El objetivo principal es desarrollar un modelo de visión por computador que:
-
-* Clasifique los frames en dos categorías: **con_pez** y **vacio**.
-* Evite a toda costa eliminar frames con peces.
-* Utilice **transfer learning** con la red **MobileNetV3-Small**.
+Este repositorio contiene el desarrollo de un modelo de clasificación binaria basado en **MobileNetV3** para distinguir entre frames **con peces** y **vacíos** dentro de secuencias de video. El proyecto incluye el preprocesamiento de datos, el entrenamiento con **validación cruzada (K-Fold)** y la evaluación final en un conjunto de prueba independiente.
 
 ---
 
-## ⚙️ Etapas del proyecto
-
-### 1️⃣ Preprocesamiento (`Preprocesamiento.ipynb`)
-
-En esta etapa se:
-
-* Cargan los datasets de los frames vacios desde:
-
-  ```
-  frames_separados/frames_vacios
-  ```
-* Se realiza **data augmentation offline** sobre los frames vacíos (rotación leve, espejado, cambios de contraste, brillo y blur suave).
-* Se guardan los frames originales con sus 4 variaciones de transformaciones en:
-  ```
-  datasets/vacio
-  ```
-
----
-
-### 2️⃣ Entrenamiento (`Entrenamiento.ipynb`)
-
-Durante el entrenamiento:
-
-* Se aplica **data augmentation al vuelo** con `torchvision.transforms`:
-
-  * Recortes aleatorios (`RandomResizedCrop`)
-  * Rotaciones leves (`RandomRotation`)
-  * Flips horizontales
-  * Cambios de color y contraste (`ColorJitter`)
-  * Blur gaussiano
-* Las imágenes se **normalizan** siguiendo las estadísticas de **ImageNet**.
-* Se entrena una **MobileNetV3-Small** con fine-tuning:
-
-  ```python
-  model = models.mobilenet_v3_small(weights=models.MobileNet_V3_Small_Weights.IMAGENET1K_V1)
-  model.classifier[3] = nn.Linear(1024, 2)  # ['con_pez', 'vacio']
-  ```
-* Se utiliza **CrossEntropyLoss** con pesos ajustados para penalizar más los errores al clasificar frames con peces:
-
-  ```python
-  criterion = nn.CrossEntropyLoss(weight=torch.tensor([2.0, 1.0]).to(DEVICE))
-  ```
-* Optimización con **Adam** y **scheduler**:
-
-  ```python
-  optimizer = optim.Adam(model.parameters(), lr=3e-4)
-  scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=2)
-  ```
-* Se implementa **early stopping** automático basado en `val_acc`.
-
-El modelo final se guarda como:
+## 📂 Estructura del Repositorio
 
 ```
-mobilenetv3_binaria_best.pt
-```
-
----
-
-## 📊 Evaluación
-
-El modelo se evalúa sobre el conjunto de validación usando métricas de clasificación:
-
-* **Matriz de confusión**
-* **Precisión (Precision)**
-* **Sensibilidad (Recall)**
-* **F1-score**
-* **Accuracy global**
-
-Ejemplo de resultados:
-
-```
-=== MATRIZ DE CONFUSIÓN ===
-[[231   2]
- [  0 150]]
-
-=== MÉTRICAS POR CLASE ===
-con_pez    → Precision: 1.000 | Recall: 0.991 | F1-score: 0.996
-vacio      → Precision: 0.987 | Recall: 1.000 | F1-score: 0.993
-
-=== ACCURACY GLOBAL ===
-0.995
-```
-
-**Interpretación:**
-
-* Alta precisión en “vacio” → elimina muy pocos frames con peces.
-* Alto recall en “vacio” → detecta correctamente la mayoría de los frames vacíos.
-* Excelente equilibrio general (F1 ≈ 0.99).
-
----
-
-## 🧱 Estructura del proyecto
-
-```
-deteccion_frames_vacios/
+salmon-detector/
 │
-├── Preprocesamiento.ipynb
-├──Entrenamiento.ipynb
+|
+├── Preprocesamiento.ipynb   ← Data augmentation (offline) para clase "vacio"
+├── Entrenamiento.ipynb      ← Entrenamiento + validación cruzada + métricas finales
 │
-├── datasets/
-│   ├── con_pez/
-│   │    ├── 1_pez/
-│   │    ├── 2_peces/
-│   │    └── 3_peces/
-│   │ 
-│   └── vacio/
-│
-├── mobilenetv3_binaria_best.pt
-│
-├── requirements.txt
-├── README.md
-└── .gitignore
+├── pyproject.toml                 ← Dependencias gestionadas por UV
+├── requirements.txt               ← Alternativa manual (opcional)
+├── README.md                      ← Este archivo
+└── 
 ```
+
+> 🧩 **Importante:** El dataset es confidencial y no se incluye en este repositorio. Debe cargarse manualmente desde una fuente privada (por ejemplo, Google Drive).
 
 ---
 
-## 💻 Instalación y ejecución
+## ⚙️ Instalación y Ejecución
+
+> **Requisitos previos:** Tener instalado [Python 3.12](https://www.python.org/downloads/) y [UV](https://docs.astral.sh/uv/).
 
 ### 1️⃣ Clonar el repositorio
 
 ```bash
-git clone https://github.com/<tu_usuario>/deteccion_frames_vacios.git
-cd deteccion_frames_vacios
+git clone [https://github.com/<tu_usuario>/salmon-detector.git](https://github.com/Claudio153/Deteccion-Frames-Sin-Peces.git)
+cd Deteccion-Frames-Sin-Peces
 ```
 
-### 2️⃣ Crear un entorno virtual (opcional)
+### 2️⃣ Crear el entorno y resolver dependencias
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Linux
-.venv\Scripts\activate     # Windows
+uv sync
 ```
 
-### 3️⃣ Instalar dependencias
+Esto:
+
+* Crea automáticamente el entorno virtual `.venv`
+* Instala todas las dependencias especificadas en `pyproject.toml`
+
+### 3️⃣ Ejecutar el entorno de trabajo (JupyterLab)
 
 ```bash
-pip install -r requirements.txt
+uv run jupyter lab
 ```
 
-### 4️⃣ Ejecutar notebooks
-
-```bash
-jupyter notebook
-```
+Esto abrirá **JupyterLab** en tu navegador, desde donde podrás ejecutar los notebooks paso a paso.
 
 ---
 
-## 📦 Dependencias principales (`requirements.txt`)
+## 🧠 Flujo de Ejecución del Proyecto
 
-Estas librerías se extraen directamente de los notebooks:
+1. **Preprocesamiento (Preprocesamiento.ipynb):**
 
-```
-torch==2.4.0
-torchvision==0.19.0
-numpy==2.1.1
-pillow==10.4.0
-matplotlib==3.9.2
-scikit-learn==1.5.2
-tqdm==4.66.5
-```
+   * Aumenta la cantidad de imágenes de la clase `vacio` mediante técnicas de data augmentation offline.
+   * Guarda los nuevos frames en el dataset local.
 
----
+2. **Entrenamiento (Entrenamiento.ipynb):**
 
-## 🧠 Consideraciones finales
+   * Entrena el modelo usando validación cruzada (5 folds estratificados).
+   * Evalúa métricas de rendimiento: *Precision, Recall, F1-score y Accuracy*.
+   * Guarda automáticamente el mejor modelo (`mobilenetv3_binaria_best.pt`).
 
-* El modelo prioriza **no eliminar frames con peces**.
-* Se ajustó la función de pérdida para penalizar más los falsos vacíos.
-* El entrenamiento y validación se realizaron con imágenes **balanceadas y aumentadas**.
-* Se utilizó **precisión mixta (AMP)** para acelerar el entrenamiento en GPU.
+3. **Evaluación final:**
+
+   * Usa un conjunto de prueba externo (`datasets_test/`) para medir el desempeño final del modelo.
+   * Genera la matriz de confusión y el reporte de clasificación.
 
 ---
 
-## 📚 Licencia
+## 📊 Resultados Esperados
 
-Este proyecto se distribuye bajo licencia **MIT**, permitiendo su libre uso y modificación con fines académicos o de investigación.
+El modelo alcanza un desempeño superior al **99% de accuracy** con alta estabilidad entre folds:
+
+| Métrica   | Promedio (K-Fold) |
+| --------- | ----------------: |
+| Accuracy  |            ≈ 0.99 |
+| Precision |            ≈ 0.99 |
+| Recall    |            ≈ 0.99 |
+| F1-Score  |            ≈ 0.99 |
+
+---
+
+## 🧩 Notas adicionales
+
+* Se usa **MobileNetV3 Small** preentrenada en *ImageNet* y ajustada a 2 clases: `con_pez` y `vacio`.
+* La función de pérdida aplica un **peso mayor a la clase `con_pez`**, priorizando evitar falsos negativos (frames con peces clasificados como vacíos).
+* El entrenamiento emplea **Early Stopping** y **ReduceLROnPlateau** para optimizar la convergencia.
+
+---
+
+## 🧾 Comandos Útiles
+
+| Acción                       | Comando              |
+| ---------------------------- | -------------------- |
+| Crear entorno y dependencias | `uv sync`            |
+| Iniciar JupyterLab           | `uv run jupyter lab` |
+| Limpiar entorno              | `uv clean`           |
+
+---
+
+## 🧑‍💻 Autor
+
+**Claudio Díaz**
+Proyecto académico – Universidad San Sebastián, 2025.
